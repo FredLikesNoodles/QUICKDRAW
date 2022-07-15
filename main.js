@@ -356,3 +356,36 @@ var timer_check = "";
 var drawn_sketch = "";
 var answer_holder = "";
 var score = 0;
+
+function check_sketch() {
+  timer_counter = timer_counter + 1;
+  document.getElementById("time_value").innerHTML = timer_counter;
+  console.log(timer_counter);
+  if (timer_counter >= 600) {
+    timer_counter = 0;
+    timer_check = "completed";
+  }
+  if (timer_check == "completed" || answer_holder == "set") {
+    timer_check = "";
+    answer_holder = "";
+    updateCanvas();
+  }
+}
+
+function updateCanvas() {
+  background("white");
+}
+function preload() {}
+function setup() {
+  canvas = createCanvas(280, 280);
+  canvas.center();
+  background("white");
+}
+function draw() {
+  check_sketch();
+  if (drawn_sketch == sketch_name) {
+    answer_holder = "set";
+    score = score + 1;
+    document.getElementById("score_value").innerHTML = score;
+  }
+}
