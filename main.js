@@ -361,7 +361,7 @@ function check_sketch() {
   timer_counter = timer_counter + 1;
   document.getElementById("time_value").innerHTML = timer_counter;
   console.log(timer_counter);
-  if (timer_counter >= 600) {
+  if (timer_counter >= 500) {
     timer_counter = 0;
     timer_check = "completed";
   }
@@ -375,11 +375,15 @@ function check_sketch() {
 function updateCanvas() {
   background("white");
 }
-function preload() {}
+function preload() {
+  classifier = ml5.imageClassifier("DoodleNet");
+}
 function setup() {
-  canvas = createCanvas(280, 280);
+  canvas = createCanvas(400, 400);
   canvas.center();
   background("white");
+  canvas.mouseReleased(classifyCanvas);
+  synth = window.speechSynthesis;
 }
 function draw() {
   check_sketch();
@@ -388,4 +392,25 @@ function draw() {
     score = score + 1;
     document.getElementById("score_value").innerHTML = score;
   }
+  strokeWeight(5);
+  stroke(0);
+  if (mouseIsPressed) {
+    line(pmouseX, pmouseY, mouseX, mouseY);
+  }
+}
+function gotResult(error, results) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log(results);
+    document.getElementById("ursketch").innerHTML = results[0].label;
+    percent = Math.round(results[0].confidence * 100);
+    console.log(percent);
+    document.getElementById("accuracy").innerHTML = percent.toFixed(2) + " %";
+    spEech = new SpeechSynthesisUtterance(results[0].label);
+    synth.speak(spEech);
+  }
+}
+function classifyCanvas() {
+  classifier.classify(canvas, gotResult);
 }
